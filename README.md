@@ -73,18 +73,19 @@
 3. 設定.env
 
     設定登入各個網銀的帳號密碼，爬蟲程式會來這邊讀取
-    ```
-    ESUN_ID=YOUR_ESUN_ID
-    ESUN_ACCOUNT=YOUR_ESUN_ACCOUNT
-    ESUN_PASSWORD=YOUR_ESUN_PASSWORD
 
-    LINE_ID=YOUR_LINE_ID
-    LINE_ACCOUNT=YOUR_LINE_ACCOUNT
-    LINE_PASSWORD=YOUR_LINE_PASSWORD
+    ```env
+    ESUN_ID=          YOUR_ESUN_ID
+    ESUN_ACCOUNT=     YOUR_ESUN_ACCOUNT
+    ESUN_PASSWORD=    YOUR_ESUN_PASSWORD
 
-    CATHAY_ID=YOUR_CATHAY_ID  
-    CATHAY_ACCOUNT=YOUR_CATHAY_ACCOUNT
-    CATHAY_PASSWORD=YOUR_CATHAY_PASSWORD
+    LINE_ID=          YOUR_LINE_ID
+    LINE_ACCOUNT=     YOUR_LINE_ACCOUNT
+    LINE_PASSWORD=    YOUR_LINE_PASSWORD
+
+    CATHAY_ID=        YOUR_CATHAY_ID  
+    CATHAY_ACCOUNT=   YOUR_CATHAY_ACCOUNT
+    CATHAY_PASSWORD=  YOUR_CATHAY_PASSWORD
     ```
 
 4. 設定.json
@@ -93,17 +94,17 @@
 
     ```json
     {
-      "type": "service_account",
-      "project_id": " ",
-      "private_key_id": " ",
-      "private_key": " ",
-      "client_email": " ",
-      "client_id": " ",
-      "auth_uri": " ",
-      "token_uri": " ",
-      "auth_provider_x509_cert_url": " ",
-      "client_x509_cert_url": " ",
-      "universe_domain": " "
+      "type":                           "service_account",
+      "project_id":                     " ",
+      "private_key_id":                 " ",
+      "private_key":                    " ",
+      "client_email":                   " ",
+      "client_id":                      " ",
+      "auth_uri":                       " ",
+      "token_uri":                      " ",
+      "auth_provider_x509_cert_url":    " ",
+      "client_x509_cert_url":           " ",
+      "universe_domain":                " "
     }
     ```
 
@@ -121,5 +122,6 @@
 
     ```bash
     30 5 * * * cd /YOUR_PATH_TO/AutoAccounting && 
-    bash -c "source /YOUR_PATH_TO/AAVenv/bin/activate &&               /YOUR_PATH_TO/AAVenv/bin/python3 /YOUR_PATH_TO/AutoAccounting/main.py" 
+    bash -c "source /YOUR_PATH_TO/AAVenv/bin/activate && 
+    /YOUR_PATH_TO/AAVenv/bin/python3 /YOUR_PATH_TO/AutoAccounting/main.py" 
     ```
