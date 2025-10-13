@@ -2,9 +2,9 @@
 
 解決資產分散在各個銀行的問題。雖然不像記帳軟體可以清楚紀錄每一筆消費明細，但透過完全每日自動化紀錄總資產取捨。可以透過程式碼自己修改明細想要怎麼呈現，以及Google Sheets的圖表也可以自己調整
 
-1. https://github.com/TYCheng31/AutoAccounting/tree/main?tab=readme-ov-file#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD
-2. https://github.com/TYCheng31/AutoAccounting/tree/main?tab=readme-ov-file#google-sheets
-3. https://github.com/TYCheng31/AutoAccounting/tree/main?tab=readme-ov-file#%E5%AE%89%E8%A3%9D%E6%AD%A5%E9%A9%9F
+1. 核心功能 https://github.com/TYCheng31/AutoAccounting/tree/main?tab=readme-ov-file#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD
+2. Google Sheets https://github.com/TYCheng31/AutoAccounting/tree/main?tab=readme-ov-file#google-sheets
+3. 安裝步驟 https://github.com/TYCheng31/AutoAccounting/tree/main?tab=readme-ov-file#%E5%AE%89%E8%A3%9D%E6%AD%A5%E9%A9%9F
 
 ## 核心功能
 
