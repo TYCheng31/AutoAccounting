@@ -40,5 +40,5 @@
 * 資產分佈
 
 工作表2.
-![image](images/GoogleSheetChart.png)
+![工作表2](images/GoogleSheetChart.png)
 
