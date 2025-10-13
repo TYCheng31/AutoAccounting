@@ -5,7 +5,7 @@
 1. [核心功能](#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD)
 2. [Google Sheets統計介面](#google-sheets)
 3. [安裝步驟](#%E5%AE%89%E8%A3%9D%E6%AD%A5%E9%A9%9F)
-4. []()
+4. [定時執行 （cron job）](#%E5%AE%9A%E6%99%82%E5%9F%B7%E8%A1%8C)
 
 ## 核心功能
 
