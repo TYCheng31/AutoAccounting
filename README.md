@@ -5,6 +5,7 @@
 1. [核心功能](#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD)
 2. [Google Sheets統計介面](#google-sheets)
 3. [安裝步驟](#%E5%AE%89%E8%A3%9D%E6%AD%A5%E9%A9%9F)
+4. []()
 
 ## 核心功能
 
@@ -104,4 +105,21 @@
       "client_x509_cert_url": " ",
       "universe_domain": " "
     }
+    ```
+
+## 定時執行 （cron job）
+
+1. 進入cron job
+
+    ```bash
+    crontab -e 
+    ```
+
+2. 新增定時工作
+
+    每天早上5：30執行 （美股收盤且網銀明細更新後）
+
+    ```bash
+    30 5 * * * cd /YOUR_PATH_TO/AutoAccounting && 
+    bash -c "source /YOUR_PATH_TO/AAVenv/bin/activate &&               /YOUR_PATH_TO/AAVenv/bin/python3 /YOUR_PATH_TO/AutoAccounting/main.py" 
     ```
