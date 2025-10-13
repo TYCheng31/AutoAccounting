@@ -5,6 +5,7 @@
 ## 核心功能
 
 * 透過Python爬蟲爬取網銀資料來完成
+  * Function: EsunSpider(), CathaySpider(), LineSpider()
 * 每日自動抓取帳號明細到個人Google Sheets
   * 台幣現金
   * 外幣
