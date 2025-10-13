@@ -31,6 +31,7 @@
 * 總資產日變化量
 
 工作表1.
+
 ![工作表1](images/GoogleSheetData.png)
 
 ### 2. 工作表2圖表
@@ -40,5 +41,6 @@
 * 資產分佈
 
 工作表2.
+
 ![工作表2](images/GoogleSheetChart.png)
 
