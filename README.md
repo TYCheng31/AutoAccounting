@@ -1,21 +1,21 @@
 # 自動化記帳
 
-解決資產分散在各個銀行的問題。雖然不像記帳軟體可以清楚紀錄每一筆消費明細，但透過完全每日自動化紀錄總資產取捨。可以透過程式碼自己修改明細想要怎麼呈現，以及Google Sheet的圖表也可以自己調整
+解決資產分散在各個銀行的問題。雖然不像記帳軟體可以清楚紀錄每一筆消費明細，但透過完全每日自動化紀錄總資產取捨。可以透過程式碼自己修改明細想要怎麼呈現，以及Google Sheets的圖表也可以自己調整
 
 ## 核心功能
 
 * 透過Python爬蟲爬取網銀資料來完成
-* 每日自動抓取帳號明細到個人google sheet
+* 每日自動抓取帳號明細到個人Google Sheets
   * 台幣現金
   * 外幣
   * 股票市值
 * 自動化彙整分散在各個銀行的帳戶的總資產 
-* 顯示在Google Sheet隨時可查看每日資產變化及明細
+* 顯示在Google Sheets隨時可查看每日資產變化及明細
 * 目前支援銀行 （缺點：皆不能開啟兩步驟登入，爬蟲會失敗）
   * 玉山網銀
   * 連線銀行
   * 國泰網銀
-## Google Sheet
+## Google Sheets
 
 ### 1. 工作表1明細欄位
 * 每日更新時間
@@ -32,7 +32,7 @@
 
 工作表1.
 
-![工作表1](images/GoogleSheetData.png)
+![工作表1](images/GoogleSheetsData.png)
 
 ### 2. 工作表2圖表
 
@@ -42,5 +42,61 @@
 
 工作表2.
 
-![工作表2](images/GoogleSheetChart.png)
+![工作表2](images/GoogleSheetsChart.png)
 
+## 安裝步驟
+
+1. 下載主要檔案
+
+    ```bash
+    git clone https://github.com/TYCheng31/AutoAccounting.git
+    ```
+
+2. 安裝所須套件
+
+    套件一律安裝在python虛擬環境中
+    
+    ```bash
+    python3 -m venv AAVenv
+    pip install gspread
+    pip install oauth2client
+    pip install selenium
+    pip install python-dotenv
+    ```
+
+3. 設定.env
+
+    設定登入各個網銀的帳號密碼，爬蟲程式會來這邊讀取
+    ```
+    ESUN_ID=YOUR_ESUN_ID
+    ESUN_ACCOUNT=YOUR_ESUN_ACCOUNT
+    ESUN_PASSWORD=YOUR_ESUN_PASSWORD
+
+    LINE_ID=YOUR_LINE_ID
+    LINE_ACCOUNT=YOUR_LINE_ACCOUNT
+    LINE_PASSWORD=YOUR_LINE_PASSWORD
+
+    CATHAY_ID=YOUR_CATHAY_ID  
+    CATHAY_ACCOUNT=YOUR_CATHAY_ACCOUNT
+    CATHAY_PASSWORD=YOUR_CATHAY_PASSWORD
+    ```
+
+4. 設定.json
+    
+    要到Google API取得個人的資訊，讓程式連接Google Sheets
+
+    ```json
+    {
+      "type": "service_account",
+      "project_id": " ",
+      "private_key_id": " ",
+      "private_key": " ",
+      "client_email": " ",
+      "client_id": " ",
+      "auth_uri": " ",
+      "token_uri": " ",
+      "auth_provider_x509_cert_url": " ",
+      "client_x509_cert_url": " ",
+      "universe_domain": " "
+    }
+    ```
