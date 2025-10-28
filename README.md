@@ -38,7 +38,10 @@
 
 工作表1.
 
-![工作表1](images/GoogleSheetsData.png)
+<div style="display: flex;">
+  <img src="images/GoogleSheetsData.png" alt="工作表1" style="margin-right: 10px;">
+  <img src="images/GoogleSheetsData2.png" alt="工作表1">
+</div>
 
 ### 2. 工作表2圖表
 

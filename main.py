@@ -18,7 +18,7 @@ load_dotenv()
 scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/drive']
 creds = ServiceAccountCredentials.from_json_keyfile_name('banklinker-473405-6be3b03228c7.json', scope)
 client = gspread.authorize(creds)
-sheet = client.open("Bank").sheet1  
+sheet = client.open("Bank").worksheet("總明細")
 
 HEADLESS = True
 
@@ -35,28 +35,28 @@ driver = webdriver.Chrome(options=chrome_options)
 
 class Bank:
     def __init__(self):
-        self.LoginId = 0
-        self.LoginAccount = 0
-        self.LoginPassword = 0
-        self.MainAccount = 0
-        self.Cash = 0
-        self.Exchange = 0
-        self.Stock = 0
+        self.login_id = 0
+        self.login_account = 0
+        self.login_password = 0
+        self.main_account = 0
+        self.cash = 0
+        self.exchange = 0
+        self.stock = 0
 
 Esun = Bank()
-Esun.LoginId = os.getenv("ESUN_ID")
-Esun.LoginAccount = os.getenv("ESUN_ACCOUNT")
-Esun.LoginPassword = os.getenv("ESUN_PASSWORD")
+Esun.login_id = os.getenv("ESUN_ID")
+Esun.login_account = os.getenv("ESUN_ACCOUNT")
+Esun.login_password = os.getenv("ESUN_PASSWORD")
 
 Cathay = Bank()
-Cathay.LoginId = os.getenv("CATHAY_ID")
-Cathay.LoginAccount = os.getenv("CATHAY_ACCOUNT")
-Cathay.LoginPassword = os.getenv("CATHAY_PASSWORD")
+Cathay.login_id = os.getenv("CATHAY_ID")
+Cathay.login_account = os.getenv("CATHAY_ACCOUNT")
+Cathay.login_password = os.getenv("CATHAY_PASSWORD")
 
 Line = Bank()
-Line.LoginId = os.getenv("LINE_ID")
-Line.LoginAccount = os.getenv("LINE_ACCOUNT")
-Line.LoginPassword = os.getenv("LINE_PASSWORD")
+Line.login_id = os.getenv("LINE_ID")
+Line.login_account = os.getenv("LINE_ACCOUNT")
+Line.login_password = os.getenv("LINE_PASSWORD")
 
 
 def EsunSpider():
@@ -72,19 +72,19 @@ def EsunSpider():
         EC.visibility_of_element_located((By.ID, "loginform:custid"))
     )
     cust_input.clear()
-    cust_input.send_keys(Esun.LoginId)
+    cust_input.send_keys(Esun.login_id)
 
     cust_input = WebDriverWait(driver, 20).until(
         EC.visibility_of_element_located((By.ID, "loginform:name"))
     )
     cust_input.clear()
-    cust_input.send_keys(Esun.LoginAccount)
+    cust_input.send_keys(Esun.login_account)
 
     cust_input = WebDriverWait(driver, 20).until(
         EC.visibility_of_element_located((By.ID, "loginform:pxsswd"))
     )
     cust_input.clear()
-    cust_input.send_keys(Esun.LoginPassword)
+    cust_input.send_keys(Esun.login_password)
 
     login_btn = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.ID, "loginform:linkCommand"))
@@ -94,8 +94,8 @@ def EsunSpider():
     span_el = WebDriverWait(driver, 30).until(
         EC.presence_of_element_located((By.ID, "_0"))
     )
-    Esun.MainAccount = span_el.text.strip()
-    print("ESUNAccount：", Esun.MainAccount)
+    Esun.main_account = span_el.text.strip()
+    print("ESUNAccount：", Esun.main_account)
 
     personal_balance_sheet = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//a[text()='個人資產負債表']"))
@@ -107,16 +107,16 @@ def EsunSpider():
     )
 
     balance_text = balance_td.text.strip().replace(",", "")
-    Esun.Cash = int(balance_text)
-    print("ESUNCash:", Esun.Cash)
+    Esun.cash = int(balance_text)
+    print("ESUNcash:", Esun.cash)
 
     balance_td = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.ID, "fms01010a:stockTd2"))
     )
 
     balance_text = balance_td.text.strip().replace(",", "")
-    Esun.Stock = int(balance_text)
-    print("ESUNStock:", Esun.Stock)
+    Esun.stock = int(balance_text)
+    print("ESUNstock:", Esun.stock)
 
     logout_button = driver.find_element(By.CSS_SELECTOR, "a.log_out")  # 使用CSS選擇器定位
     logout_button.click()
@@ -127,17 +127,17 @@ def CathaySpider():
     cust_input = WebDriverWait(driver, 20).until(
         EC.visibility_of_element_located((By.ID, "CustID"))
     )
-    driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.LoginId)
+    driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.login_id)
 
     cust_input = WebDriverWait(driver, 20).until(
         EC.visibility_of_element_located((By.ID, "UserIdKeyin"))
     )
-    driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.LoginAccount)
+    driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.login_account)
 
     cust_input = WebDriverWait(driver, 20).until(
         EC.visibility_of_element_located((By.ID, "PasswordKeyin"))
     )
-    driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.LoginPassword)
+    driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.login_password)
 
     loginButton = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and @class='btn no-print btn-fill js-login btn btn-fill w-100 u-pos-relative' and @onclick='NormalDataCheck()']"))
@@ -148,15 +148,15 @@ def CathaySpider():
         EC.visibility_of_element_located((By.XPATH, "//a[contains(@onclick, 'AutoGoMenu') and @class='link u-fs-14']"))
     )
 
-    Cathay.MainAccount = link_element.text
-    print("CATHAYAccount:", Cathay.MainAccount)
+    Cathay.main_account = link_element.text
+    print("CATHAYAccount:", Cathay.main_account)
 
     balance_element = WebDriverWait(driver, 20).until(
         EC.visibility_of_element_located((By.ID, "TD-balance"))
     )
     balance_text = balance_element.text
-    Cathay.Cash = int(balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
-    print("CATHAYCash:", Cathay.Cash)
+    Cathay.cash = int(balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
+    print("CATHAYcash:", Cathay.cash)
 
     tabFTD = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.ID, "tabFTD"))
@@ -167,8 +167,8 @@ def CathaySpider():
         EC.visibility_of_element_located((By.ID, "FTD-balance"))
     )
     balance_text = balance_element.text
-    Cathay.Exchange = int(balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
-    print("CATHAYExchange:", Cathay.Exchange)
+    Cathay.exchange = int(balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
+    print("CATHAYexchange:", Cathay.exchange)
 
     tabFUND = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.ID, "tabFUND"))
@@ -181,8 +181,8 @@ def CathaySpider():
     fund_balance_text = fund_balance_element.text
 
     # 移除逗號並轉換為數字
-    Cathay.Stock = int(fund_balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
-    print("CATHAYStock:", Cathay.Stock)
+    Cathay.stock = int(fund_balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
+    print("CATHAYstock:", Cathay.stock)
 
     logout_button = WebDriverWait(driver, 20).until(
         EC.element_to_be_clickable((By.XPATH, "//a[@onclick='IsNeedCheckReconcil()']"))
@@ -192,9 +192,9 @@ def LineSpider():
     driver.get("https://accessibility.linebank.com.tw/transaction")
     wait = WebDriverWait(driver, 20)
 
-    wait.until(EC.presence_of_element_located((By.ID, "nationalId"))).send_keys(Line.LoginId)
-    wait.until(EC.presence_of_element_located((By.ID, "userId"))).send_keys(Line.LoginAccount)
-    wait.until(EC.presence_of_element_located((By.ID, "pw"))).send_keys(Line.LoginPassword)
+    wait.until(EC.presence_of_element_located((By.ID, "nationalId"))).send_keys(Line.login_id)
+    wait.until(EC.presence_of_element_located((By.ID, "userId"))).send_keys(Line.login_account)
+    wait.until(EC.presence_of_element_located((By.ID, "pw"))).send_keys(Line.login_password)
 
     login_btn = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[@title='登入友善網路銀行']"))
@@ -210,63 +210,65 @@ def LineSpider():
 
     h2 = driver.find_element(By.XPATH, "//h2[contains(., '主帳戶')]")
     txt = re.sub(r"\s+", "", h2.text)                    
-    Line.MainAccount = re.search(r"[（(]([0-9\-]+)[)）]", txt).group(1)
-    print("LINEAccount:", Line.MainAccount)
+    Line.main_account = re.search(r"[（(]([0-9\-]+)[)）]", txt).group(1)
+    print("LINEAccount:", Line.main_account)
 
     p = driver.find_element(By.XPATH, "//p[contains(., '可用餘額')]")
     ptxt = re.sub(r"\s+", "", p.text)                    
     m = re.search(r"NT\$?([0-9,]+(?:\.[0-9]+)?)", ptxt)
     available_display = f"NT${m.group(1)}"
-    Line.Cash = int(m.group(1).replace(",", ""))
-    print("LINECash:", Line.Cash)
+    Line.cash = int(m.group(1).replace(",", ""))
+    print("LINEcash:", Line.cash)
 def JudgeColor(SheetRow, row):
     if SheetRow < 0:
         sheet.format(row, {'backgroundColor': {'red': 1, 'green': 0, 'blue': 0}})
     elif SheetRow > 0:
         sheet.format(row, {'backgroundColor': {'red': 0, 'green': 1, 'blue': 0}})
-
+    elif SheetRow == 0:
+        sheet.format(row, {'backgroundColor': {'red': 1, 'green': 1, 'blue': 1}})
 
 
 EsunSpider()
 CathaySpider()
 LineSpider()
 
-TotalCash = Esun.Cash + Cathay.Cash + Line.Cash
-TotalExchange = Cathay.Exchange
-TotalStock = Esun.Stock + Cathay.Stock
-TotalAssets = TotalCash + TotalExchange + TotalStock
-print("TotalCash:", TotalCash)
-print("TotalExchange:", TotalExchange)
-print("TotalStock:", TotalStock)
-print("TotalAssets:", TotalAssets)
+total_cash = Esun.cash + Cathay.cash + Line.cash
+total_exchange = Cathay.exchange
+total_stock = Esun.stock + Cathay.stock
+total_assets = total_cash + total_exchange + total_stock
+print("total_cash:", total_cash)
+print("total_exchange:", total_exchange)
+print("total_stock:", total_stock)
+print("total_assets:", total_assets)
 
-D6_value = int(sheet.cell(6, 4).value)   
-E6_value = int(sheet.cell(6, 5).value)
-F6_value = int(sheet.cell(6, 6).value)
-G6_value = int(sheet.cell(6, 7).value)
+C3_value = int(sheet.cell(3, 3).value)
+D3_value = int(sheet.cell(3, 4).value) 
+E3_value = int(sheet.cell(3, 5).value) 
+F3_value = int(sheet.cell(3, 6).value) 
 
-I6_value = TotalCash - D6_value
-J6_value = TotalExchange - E6_value
-K6_value = TotalStock - F6_value
-L6_value = TotalAssets - G6_value
+cash_diff = total_cash - C3_value
+exchange_diff = total_exchange - D3_value
+stock_diff = total_stock - E3_value
+assets_diff = total_assets - F3_value
 
 current_date = datetime.now().strftime("%Y/%m/%d")
 current_time = datetime.now().strftime("%H:%M:%S")
 current_date2 = datetime.now().strftime("%m/%d")
 
-sheet.insert_row([current_date], 2) 
-sheet.insert_row([current_time, '玉山銀行', Esun.MainAccount, Esun.Cash, Esun.Exchange, Esun.Stock], 3) 
-sheet.insert_row([" ", '國泰銀行', Cathay.MainAccount, Cathay.Cash, Cathay.Exchange, Cathay.Stock], 4) 
-sheet.insert_row([" ", '連線銀行', Line.MainAccount, Line.Cash, Line.Exchange, Line.Stock], 5) 
-sheet.insert_row([" ", " ", " ", TotalCash, TotalExchange, TotalStock, TotalAssets, current_date2, I6_value, J6_value, K6_value, L6_value], 6)
+sheet.insert_row([current_date, current_time, 
+                total_cash, total_exchange, total_stock, total_assets, 
+                cash_diff, exchange_diff, stock_diff, assets_diff, " ", 
+                Esun.main_account, Esun.cash, Esun.exchange, Esun.stock, " ",  
+                Cathay.main_account, Cathay.cash, Cathay.exchange, Cathay.stock, " ",  
+                Line.cash, Line.exchange, Line.stock
+                ], 3)
 
+G3_value = int(sheet.cell(3, 7).value)   
+H3_value = int(sheet.cell(3, 8).value)
+I3_value = int(sheet.cell(3, 9).value)
+J3_value = int(sheet.cell(3, 10).value)
 
-I6_value = int(sheet.cell(6, 9).value)   
-J6_value = int(sheet.cell(6, 10).value)
-K6_value = int(sheet.cell(6, 11).value)
-L6_value = int(sheet.cell(6, 12).value)
-
-JudgeColor(I6_value, 'I6')
-JudgeColor(J6_value, 'J6')
-JudgeColor(K6_value, 'K6')
-JudgeColor(L6_value, 'L6')
+JudgeColor(G3_value, 'G3')
+JudgeColor(H3_value, 'H3')
+JudgeColor(I3_value, 'I3')
+JudgeColor(J3_value, 'J3')
