@@ -38,10 +38,8 @@
 
 工作表1.
 
-<p align="left">
-  <img src="images/GoogleSheetsData.png" alt="工作表1" width="45%" style="margin-right: 5%;">
-  <img src="images/GoogleSheetsData2.png" alt="工作表1" width="45%">
-</p>
+![工作表1-1](images/GoogleSheetsData.png)
+![工作表1-2](images/GoogleSheetsData2.png)
 
 ### 2. 工作表2圖表
 
