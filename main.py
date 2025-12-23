@@ -1,3 +1,4 @@
+### 2025/12/23 test ok
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from selenium import webdriver
@@ -16,11 +17,11 @@ from openpyxl.styles import NamedStyle
 load_dotenv()
 
 scope = ["https://spreadsheets.google.com/feeds", 'https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('banklinker-473405-6be3b03228c7.json', scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name('TOUR_JSON_FILE_NAME.json', scope)
 client = gspread.authorize(creds)
 sheet = client.open("Bank").worksheet("總明細")
 
-HEADLESS = True
+HEADLESS = False
 
 chrome_options = Options()
 if HEADLESS:
@@ -143,51 +144,47 @@ def CathaySpider():
         EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and @class='btn no-print btn-fill js-login btn btn-fill w-100 u-pos-relative' and @onclick='NormalDataCheck()']"))
     )
     driver.execute_script("arguments[0].click();", loginButton)
+    time.sleep(10)
 
-    link_element = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.XPATH, "//a[contains(@onclick, 'AutoGoMenu') and @class='link u-fs-14']"))
+    ###TWD
+    button_element = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, 'button[data-evt="home_twd_overview"]'))
     )
+    raw_text = button_element.text
+    clean_text = raw_text.replace("TWD", "").replace(",", "").strip()
+    Cathay.cash = int(clean_text)
+    print(f"CATHAY_TWD: {Cathay.cash}")
 
-    Cathay.main_account = link_element.text
-    print("CATHAYAccount:", Cathay.main_account)
-
-    balance_element = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.ID, "TD-balance"))
+    ###Foreign
+    foreign_currency_element = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, 'button[data-evt="home_foreign_currency_overview"]'))
     )
-    balance_text = balance_element.text
-    Cathay.cash = int(balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
-    print("CATHAYcash:", Cathay.cash)
+    foreign_currency_text = foreign_currency_element.text
+    clean_text = foreign_currency_text.replace("TWD", "").replace(",", "").strip().split()[0]
+    Cathay.exchange = int(clean_text)
+    print("CATHAYForeign:", Cathay.exchange)
 
-    tabFTD = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.ID, "tabFTD"))
+    ###STOCK
+    xpath_selector = "//p[text()='投資']/parent::div/following-sibling::div[@class='css-iu1euh']/p"
+    
+    investment_element = WebDriverWait(driver, 20).until(
+        EC.visibility_of_element_located((By.XPATH, xpath_selector))
     )
-    driver.execute_script("arguments[0].click();", tabFTD)
-
-    balance_element = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.ID, "FTD-balance"))
-    )
-    balance_text = balance_element.text
-    Cathay.exchange = int(balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
-    print("CATHAYexchange:", Cathay.exchange)
-
-    tabFUND = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.ID, "tabFUND"))
-    )
-    driver.execute_script("arguments[0].click();", tabFUND)
-
-    fund_balance_element = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.ID, "FUND-balance"))
-    )
-    fund_balance_text = fund_balance_element.text
-
-    # 移除逗號並轉換為數字
-    Cathay.stock = int(fund_balance_text.replace(",", ""))  # 先去掉逗號，再轉換為整數
+    
+    # 2. 獲取文字並清理
+    investment_text = investment_element.text
+    clean_text = investment_text.replace("TWD", "").replace(",", "").strip().split()[0]
+    Cathay.stock = int(clean_text)
     print("CATHAYstock:", Cathay.stock)
 
+    ###LOGOUT
     logout_button = WebDriverWait(driver, 20).until(
-        EC.element_to_be_clickable((By.XPATH, "//a[@onclick='IsNeedCheckReconcil()']"))
+        EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-evt="onlinebanking-logout"]'))
     )
-    driver.execute_script("arguments[0].click();", logout_button)
+    
+    logout_button.click()
+
+
 def LineSpider():
     driver.get("https://accessibility.linebank.com.tw/transaction")
     wait = WebDriverWait(driver, 20)
@@ -260,7 +257,7 @@ sheet.insert_row([current_date, current_time,
                 cash_diff, exchange_diff, stock_diff, assets_diff, " ", 
                 Esun.main_account, Esun.cash, Esun.exchange, Esun.stock, " ",  
                 Cathay.main_account, Cathay.cash, Cathay.exchange, Cathay.stock, " ",  
-                Line.cash, Line.exchange, Line.stock
+                Line.main_account, Line.cash, Line.exchange, Line.stock
                 ], 3)
 
 G3_value = int(sheet.cell(3, 7).value)   
