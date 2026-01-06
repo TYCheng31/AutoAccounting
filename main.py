@@ -59,51 +59,51 @@ Line.login_id = os.getenv("LINE_ID")
 Line.login_account = os.getenv("LINE_ACCOUNT")
 Line.login_password = os.getenv("LINE_PASSWORD")
 
+wait = WebDriverWait(driver, 20)
 
 def EsunSpider():
     driver.get("https://ebank.esunbank.com.tw/index.jsp")
-    wait = WebDriverWait(driver, 20)
 
     driver.switch_to.default_content()
-    WebDriverWait(driver, 20).until(
+    wait.until(
         EC.frame_to_be_available_and_switch_to_it((By.ID, "iframe1"))
     )
 
-    cust_input = WebDriverWait(driver, 20).until(
+    cust_input = wait.until(
         EC.visibility_of_element_located((By.ID, "loginform:custid"))
     )
     cust_input.clear()
     cust_input.send_keys(Esun.login_id)
 
-    cust_input = WebDriverWait(driver, 20).until(
+    cust_input = wait.until(
         EC.visibility_of_element_located((By.ID, "loginform:name"))
     )
     cust_input.clear()
     cust_input.send_keys(Esun.login_account)
 
-    cust_input = WebDriverWait(driver, 20).until(
+    cust_input = wait.until(
         EC.visibility_of_element_located((By.ID, "loginform:pxsswd"))
     )
     cust_input.clear()
     cust_input.send_keys(Esun.login_password)
 
-    login_btn = WebDriverWait(driver, 20).until(
+    login_btn = wait.until(
         EC.element_to_be_clickable((By.ID, "loginform:linkCommand"))
     )
     login_btn.click()
 
-    span_el = WebDriverWait(driver, 30).until(
+    span_el = wait.until(
         EC.presence_of_element_located((By.ID, "_0"))
     )
     Esun.main_account = span_el.text.strip()
     print("ESUNAccount：", Esun.main_account)
 
-    personal_balance_sheet = WebDriverWait(driver, 20).until(
+    personal_balance_sheet = wait.until(
         EC.presence_of_element_located((By.XPATH, "//a[text()='個人資產負債表']"))
     )
     driver.execute_script("arguments[0].click();", personal_balance_sheet)
 
-    balance_td = WebDriverWait(driver, 20).until(
+    balance_td = wait.until(
         EC.presence_of_element_located((By.ID, "fms01010a:twTd2"))
     )
 
@@ -111,7 +111,7 @@ def EsunSpider():
     Esun.cash = int(balance_text)
     print("ESUNcash:", Esun.cash)
 
-    balance_td = WebDriverWait(driver, 20).until(
+    balance_td = wait.until(
         EC.presence_of_element_located((By.ID, "fms01010a:stockTd2"))
     )
 
@@ -119,35 +119,35 @@ def EsunSpider():
     Esun.stock = int(balance_text)
     print("ESUNstock:", Esun.stock)
 
-    logout_button = driver.find_element(By.CSS_SELECTOR, "a.log_out")  # 使用CSS選擇器定位
+    logout_button = driver.find_element(By.CSS_SELECTOR, "a.log_out")  
     logout_button.click()
+    
 def CathaySpider():
     driver.get("https://www.cathaybk.com.tw/mybank/")
-    wait = WebDriverWait(driver, 120)
 
-    cust_input = WebDriverWait(driver, 20).until(
+    cust_input = wait.until(
         EC.visibility_of_element_located((By.ID, "CustID"))
     )
     driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.login_id)
 
-    cust_input = WebDriverWait(driver, 20).until(
+    cust_input = wait.until(
         EC.visibility_of_element_located((By.ID, "UserIdKeyin"))
     )
     driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.login_account)
 
-    cust_input = WebDriverWait(driver, 20).until(
+    cust_input = wait.until(
         EC.visibility_of_element_located((By.ID, "PasswordKeyin"))
     )
     driver.execute_script("arguments[0].value = arguments[1];", cust_input, Cathay.login_password)
 
-    loginButton = WebDriverWait(driver, 20).until(
+    loginButton = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and @class='btn no-print btn-fill js-login btn btn-fill w-100 u-pos-relative' and @onclick='NormalDataCheck()']"))
     )
     driver.execute_script("arguments[0].click();", loginButton)
     time.sleep(10)
 
     ###TWD
-    button_element = WebDriverWait(driver, 20).until(
+    button_element = wait.until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'button[data-evt="home_twd_overview"]'))
     )
     raw_text = button_element.text
@@ -156,7 +156,7 @@ def CathaySpider():
     print(f"CATHAY_TWD: {Cathay.cash}")
 
     ###Foreign
-    foreign_currency_element = WebDriverWait(driver, 20).until(
+    foreign_currency_element = wait.until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, 'button[data-evt="home_foreign_currency_overview"]'))
     )
     foreign_currency_text = foreign_currency_element.text
@@ -167,18 +167,17 @@ def CathaySpider():
     ###STOCK
     xpath_selector = "//p[text()='投資']/parent::div/following-sibling::div[@class='css-iu1euh']/p"
     
-    investment_element = WebDriverWait(driver, 20).until(
+    investment_element = wait.until(
         EC.visibility_of_element_located((By.XPATH, xpath_selector))
     )
     
-    # 2. 獲取文字並清理
     investment_text = investment_element.text
     clean_text = investment_text.replace("TWD", "").replace(",", "").strip().split()[0]
     Cathay.stock = int(clean_text)
     print("CATHAYstock:", Cathay.stock)
 
     ###LOGOUT
-    logout_button = WebDriverWait(driver, 20).until(
+    logout_button = wait.until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[data-evt="onlinebanking-logout"]'))
     )
     
@@ -187,7 +186,6 @@ def CathaySpider():
 
 def LineSpider():
     driver.get("https://accessibility.linebank.com.tw/transaction")
-    wait = WebDriverWait(driver, 20)
 
     wait.until(EC.presence_of_element_located((By.ID, "nationalId"))).send_keys(Line.login_id)
     wait.until(EC.presence_of_element_located((By.ID, "userId"))).send_keys(Line.login_account)
@@ -205,7 +203,9 @@ def LineSpider():
 
     wait.until(EC.presence_of_element_located((By.XPATH, "//*[contains(., '可用餘額')]")))
 
-    h2 = driver.find_element(By.XPATH, "//h2[contains(., '主帳戶')]")
+    h2 = wait.until(
+        EC.presence_of_element_located((By.XPATH, "//h2[contains(., '主帳戶')]"))
+    )
     txt = re.sub(r"\s+", "", h2.text)                    
     Line.main_account = re.search(r"[（(]([0-9\-]+)[)）]", txt).group(1)
     print("LINEAccount:", Line.main_account)
@@ -216,6 +216,7 @@ def LineSpider():
     available_display = f"NT${m.group(1)}"
     Line.cash = int(m.group(1).replace(",", ""))
     print("LINEcash:", Line.cash)
+    
 def JudgeColor(SheetRow, row):
     if SheetRow < 0:
         sheet.format(row, {'backgroundColor': {'red': 1, 'green': 0, 'blue': 0}})
