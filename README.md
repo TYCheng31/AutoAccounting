@@ -24,6 +24,7 @@
 ## Google Sheets統計介面
 
 ### 1. 工作表1明細欄位
+
 * 每日更新時間
 * 銀行名稱
 * 帳戶號碼
@@ -51,6 +52,13 @@
 
 ![工作表2](images/GoogleSheetsChart.png)
 
+## Telegram Bot通知
+
+* 整理每日更新
+  新增現金水位百分比
+
+![](images/telegram_bot_message_ex.png)
+
 ## 安裝步驟
 
 1. 下載主要檔案
@@ -73,7 +81,8 @@
 
 3. 設定.env
 
-    設定登入各個網銀的帳號密碼，爬蟲程式會來這邊讀取
+    * 設定登入各個網銀的帳號密碼，爬蟲程式會來這邊讀取
+    * 設定Telegram Bot ID
 
     ```env
     ESUN_ID=          YOUR_ESUN_ID
@@ -87,6 +96,9 @@
     CATHAY_ID=        YOUR_CATHAY_ID  
     CATHAY_ACCOUNT=   YOUR_CATHAY_ACCOUNT
     CATHAY_PASSWORD=  YOUR_CATHAY_PASSWORD
+
+    TELEGRAM_BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
+    TELEGRAM_CHAT_ID=YOUR_TELEGRAM_CHAT_ID
     ```
 
 4. 設定.json
