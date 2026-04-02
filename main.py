@@ -3,22 +3,44 @@ from oauth2client.service_account import ServiceAccountCredentials
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 import os
 import time
 import sys
 import re
+import requests 
 from dotenv import load_dotenv
 from datetime import datetime
 from openpyxl.styles import NamedStyle
-from telegram_handler import TelegramLogger
 
-# Load environment variables
 load_dotenv()
 
-# Initialize Telegram Logger
-t_logger = TelegramLogger()
+class DiscordLogger:
+    def __init__(self):
+        self.token = os.getenv("DISCORD_TOKEN")
+        self.channel_id = os.getenv("CHANNEL_ID")
+        self.api_url = f"https://discord.com/api/v10/channels/{self.channel_id}/messages"
+        self.headers = {
+            "Authorization": f"Bot {self.token}",
+            "Content-Type": "application/json"
+        }
+
+    def send_message(self, message, parse_mode=None):
+        """傳送訊息到 Discord (Discord 預設支援 Markdown，不需特別指定 parse_mode)"""
+        if not self.token or not self.channel_id:
+            print("Discord Token 或 Channel ID 未設定！")
+            return
+            
+        payload = {"content": message}
+        try:
+            response = requests.post(self.api_url, headers=self.headers, json=payload)
+            response.raise_for_status() 
+        except Exception as e:
+            print(f"Discord 訊息發送失敗: {e}")
+
+d_logger = DiscordLogger()
 log_buffer = []
 
 def log_print(message):
@@ -31,7 +53,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_name('banklinker-473405-6be3
 client = gspread.authorize(creds)
 sheet = client.open("Bank").worksheet("總明細")
 
-HEADLESS = True
+HEADLESS = False
 
 chrome_options = Options()
 if HEADLESS:
@@ -217,20 +239,27 @@ def LineSpider():
         )
         confirm_btn.click()
 
-        wait.until(EC.presence_of_element_located((By.XPATH, "//*[contains(., '可用餘額')]")))
-
-        h2 = wait.until(
-            EC.presence_of_element_located((By.XPATH, "//h2[contains(., '主帳戶')]"))
+        dropdown_element = wait.until(
+            EC.presence_of_element_located((By.ID, "account-dropdown"))
         )
-        txt = re.sub(r"\s+", "", h2.text)                    
-        Line.main_account = re.search(r"[（(]([0-9\-]+)[)）]", txt).group(1)
-        print(f"LINEAccount: {Line.main_account}")
+        select = Select(dropdown_element)
+        select.select_by_value("111003906466")
 
-        p = driver.find_element(By.XPATH, "//p[contains(., '可用餘額')]")
-        ptxt = re.sub(r"\s+", "", p.text)                    
-        m = re.search(r"NT\$?([0-9,]+(?:\.[0-9]+)?)", ptxt)
-        Line.cash = int(m.group(1).replace(",", ""))
-        print(f"LINEcash: {Line.cash}")
+
+        p_element = wait.until(
+            EC.presence_of_element_located((By.XPATH, "//p[contains(., '可用餘額')]"))
+        )
+        
+        raw_text = p_element.text
+        print(f"網頁上抓到的原始文字: '{raw_text}'")
+        
+        m = re.search(r"可用餘額\s*:\s*NT\$([0-9,]+)", raw_text)
+        if m:
+            Line.cash = int(m.group(1).replace(",", ""))
+            print(f"LINEcash: {Line.cash}")
+        else:
+            print("警告：抓到了標籤，但格式無法解析！")
+        
     except Exception as e:
         log_print(f"Error in LineSpider: {e}")
     
@@ -303,7 +332,7 @@ try:
         f"```\n"
         f"AutoAccount Report \n"
         f"{current_date} {current_time}\n\n"
-        f"{fmt('CASH RATIO', total_cash/total_assets,'%')}\n"
+        f"{fmt('CASH RATIO', (total_cash + total_exchange )/total_assets,'%')}\n"
         f"-------------------------------\n" 
         f"{fmt('CHANGE')}\n"
         f"{fmt('Cash', cash_diff)}\n"
@@ -319,13 +348,14 @@ try:
         f"-------------------------------\n"
         f"```" 
     )
-    t_logger.send_message(summary_message, parse_mode='Markdown')
+
+    d_logger.send_message(summary_message)
 
 
 except Exception as e:
     error_msg = f"Execution Failed: {e}"
     log_print(error_msg)
-    t_logger.send_message(error_msg)
+    d_logger.send_message(error_msg)
 finally:
     try:
         driver.quit()
